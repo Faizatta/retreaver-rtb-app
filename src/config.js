@@ -59,7 +59,7 @@ try {
       retreaverPublisherId: process.env.RETREAVER_PUBLISHER_ID || 'demo_pub',
       retreaverCampaignId: process.env.RETREAVER_CAMPAIGN_ID,
       retreaverEndpoint: 'https://rtb.retreaver.com/rtbs.json',
-      demoMode: true,
+      demoMode: process.env.DEMO_MODE === 'true',
       nodeEnv: 'production'
     };
   }
