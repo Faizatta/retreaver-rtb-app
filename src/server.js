@@ -57,6 +57,11 @@ app.get('/api/health', (req, res) => {
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Tracking dashboard route
+app.get('/tracking', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'tracking.html'));
+});
+
 // Fallback route for SPA / static index
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

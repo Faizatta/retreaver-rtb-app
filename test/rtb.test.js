@@ -295,4 +295,21 @@ describe('4. Express HTTP Route Integration', () => {
     assert.equal(bodyText.includes('RETREAVER_RTB_KEY'), false);
     assert.equal(bodyText.includes('test_key'), false);
   });
+
+  test('GET /api/tracking returns tracked leads list', async () => {
+    const res = await fetch(`http://localhost:${serverPort}/api/tracking`);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.success, true);
+    assert.ok(Array.isArray(body.leads));
+  });
+
+  test('GET /tracking serves tracking dashboard HTML', async () => {
+    const res = await fetch(`http://localhost:${serverPort}/tracking`);
+    assert.equal(res.status, 200);
+    const text = await res.text();
+    assert.ok(text.includes('Tracking Dashboard'));
+    assert.ok(text.includes('SureCall LLC'));
+  });
 });
+

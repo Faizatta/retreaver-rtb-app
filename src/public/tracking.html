@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Live Real-Time Lead & DID Tracking Dashboard — SureCall LLC.">
+  <title>Live Tracking Dashboard — Ping Bid Post</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="shell">
+    <header>
+      <a class="brand" href="./" aria-label="Ping Bid Post home">
+        <span class="brand-icon" aria-hidden="true">p<span>↗</span></span>
+        <span>ping<span class="light">bidpost</span><small>SURECALL LIVE TRACKING</small></span>
+      </a>
+      <div class="header-right">
+        <a href="/" class="nav-link">
+          <span>← Back to Bid Workspace</span>
+        </a>
+        <div class="domain">surecall.world</div>
+      </div>
+    </header>
+
+    <main>
+      <div class="intro">
+        <p class="eyebrow">REAL-TIME BID MONITORING <span>LIVE LOGS</span></p>
+        <h1>Live Lead & DID<br><em>Tracking Dashboard.</em></h1>
+        <p>Monitor all caller IDs, assigned destination DIDs, states, and reservation timestamps in real time.</p>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">Total Bids Processed</div>
+          <div class="val" id="total-pings-val">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Active DIDs Reserved</div>
+          <div class="val" id="active-dids-val">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Publisher Profile</div>
+          <div class="val" style="font-size: 20px; color: #b8a4ff; margin-top: 4px;">SureCall LLC</div>
+          <div style="font-size: 12px; color: #888ba3; margin-top: 4px;">ID: 404c64b1 · Campaign: d236359b</div>
+        </div>
+      </div>
+
+      <!-- Tracking Table Card -->
+      <section class="glass form-card" style="padding: 24px 28px;">
+        <div class="table-actions">
+          <div>
+            <h2 style="font-size: 18px; margin: 0; font-weight: 500;">Live Reservation Stream</h2>
+            <p style="font-size: 12px; color: #8b8ea8; margin: 4px 0 0;">Auto-syncs live requests every 5s</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-icon" id="refresh-btn">
+              <span>↻ Refresh</span>
+            </button>
+            <button class="btn-icon" id="clear-btn" style="color: #ff9da9;">
+              <span>✕ Clear</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="tracking-table-wrap">
+          <table class="tracking-table">
+            <thead>
+              <tr>
+                <th>TIMESTAMP</th>
+                <th>CALLER ID</th>
+                <th>STATE / ZIP</th>
+                <th>DESTINATION DID</th>
+                <th>STATUS</th>
+                <th>PUBLISHER</th>
+              </tr>
+            </thead>
+            <tbody id="tracking-tbody">
+              <tr>
+                <td colspan="6" class="empty-state-box">
+                  No reservations logged yet. Go to the <a href="/" style="color: #b8a7ff;">Bid Workspace</a> to create your first reservation!
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>© 2026 Ping Bid Post · SureCall LLC</span>
+      <span>Live Retreaver RTB Reservation Engine</span>
+    </footer>
+  </div>
+
+  <script>
+    async function loadTrackingData() {
+      try {
+        const res = await fetch('/api/tracking');
+        const data = await res.json();
+        
+        if (!data.success) return;
+
+        const leads = data.leads || [];
+        document.getElementById('total-pings-val').textContent = leads.length;
+        document.getElementById('active-dids-val').textContent = leads.length;
+
+        const tbody = document.getElementById('tracking-tbody');
+        if (leads.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="empty-state-box">
+                No reservations logged yet. Go to the <a href="/" style="color: #b8a7ff;">Bid Workspace</a> to create your first reservation!
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = leads.map(item => {
+          const date = new Date(item.timestamp);
+          const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          const dateStr = date.toLocaleDateString();
+
+          return `
+            <tr>
+              <td>
+                <div style="font-weight: 500;">${timeStr}</div>
+                <div style="font-size: 11px; color: #767a94;">${dateStr}</div>
+              </td>
+              <td><span style="font-family: monospace; font-size: 13px;">${item.caller_number}</span></td>
+              <td>${item.caller_state} · ${item.caller_zip}</td>
+              <td>
+                <span class="did-pill">${item.destination_number}</span>
+                <button class="copy-mini" onclick="copyDid('${item.destination_number}', this)" title="Copy DID">⧉</button>
+              </td>
+              <td>
+                <span class="status-tag">Reserved</span>
+              </td>
+              <td style="color: #a0a4c2; font-size: 12px;">${item.publisher || 'SureCall LLC'}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load tracking data', err);
+      }
+    }
+
+    async function copyDid(num, btn) {
+      try {
+        await navigator.clipboard.writeText(num);
+        const originalText = btn.textContent;
+        btn.textContent = '✓';
+        setTimeout(() => { btn.textContent = originalText; }, 1500);
+      } catch (e) {}
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', loadTrackingData);
+    
+    document.getElementById('clear-btn').addEventListener('click', async () => {
+      if (confirm('Are you sure you want to clear tracking history?')) {
+        await fetch('/api/tracking', { method: 'DELETE' });
+        loadTrackingData();
+      }
+    });
+
+    // Initial load + poll every 5s
+    loadTrackingData();
+    setInterval(loadTrackingData, 5000);
+  </script>
+</body>
+</html>

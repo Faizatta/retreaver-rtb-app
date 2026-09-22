@@ -12,3 +12,7 @@ yarn-error.log*
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Data directory
+data/
+

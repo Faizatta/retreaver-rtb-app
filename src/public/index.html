@@ -1,154 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retreaver RTB Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Check call bids with Ping Bid Post — Retreaver RTB Inbound DID Reservation Workspace.">
+  <title>Ping Bid Post — Bid workspace</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+  <script src="app.js?v=3" defer></script>
 </head>
 <body>
-  <div class="page-wrapper">
-    <header class="app-header">
-      <div class="badge">Retreaver RTB</div>
-      <h1>Inbound DID Reservation</h1>
-      <p class="subtitle">Submit caller details to request a real-time bidding inbound destination number.</p>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="shell">
+    <header>
+      <a class="brand" href="./" aria-label="Ping Bid Post home">
+        <span class="brand-icon" aria-hidden="true">p<span>↗</span></span>
+        <span>ping<span class="light">bidpost</span><small>SureCall CALL BIDDING WORKSPACE</small></span>
+      </a>
+      <div class="header-right">
+        <a href="/tracking" class="nav-link" id="tracking-nav-btn">
+          <span>📊 Live Tracking</span>
+          <span class="badge-count" id="header-lead-count">0</span>
+        </a>
+        <div class="domain">pingbidpost.world</div>
+      </div>
     </header>
 
-    <main class="card">
-      <form id="rtbForm" novalidate>
-        <!-- Caller ID Field -->
-        <div class="form-group">
-          <label for="callerId">Caller ID / Phone Number</label>
-          <div class="input-wrapper">
-            <input
-              type="tel"
-              id="callerId"
-              name="caller_number"
-              placeholder="+1 (800) 555-0199"
-              required
-              autocomplete="tel"
-            />
-          </div>
-          <span class="hint">E.164 format or 10-digit US number</span>
-        </div>
+    <main>
+      <div class="intro">
+        <p class="eyebrow">THE BID WORKSPACE <span>01 / LIVE REQUEST</span></p>
+        <h1>A better connection<br>starts with a <em>ping.</em></h1>
+        <p>Enter your caller details. Find your destination number.</p>
+      </div>
 
-        <!-- Location Group (ZIP and State) -->
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label for="zipCode">ZIP Code</label>
-            <input
-              type="text"
-              id="zipCode"
-              name="caller_zip"
-              placeholder="90210"
-              maxlength="10"
-              required
-            />
-            <span class="hint">5-digit US postal code</span>
+      <div class="workspace">
+        <!-- Panel 1: Input Request Form -->
+        <section class="glass form-card" aria-labelledby="form-title">
+          <div class="panel-head">
+            <span class="step">01</span>
+            <div>
+              <h2 id="form-title">Make your next move.</h2>
+              <p>Start a new bid request (Inbound DID Reservation)</p>
+            </div>
+            <span class="corner-mark" aria-hidden="true">↗</span>
           </div>
 
-          <div class="form-group flex-1">
-            <label for="state">State</label>
-            <select id="state" name="caller_state" required>
-              <option value="" disabled selected>Select State</option>
-              <option value="AL">AL - Alabama</option>
-              <option value="AK">AK - Alaska</option>
-              <option value="AZ">AZ - Arizona</option>
-              <option value="AR">AR - Arkansas</option>
-              <option value="CA">CA - California</option>
-              <option value="CO">CO - Colorado</option>
-              <option value="CT">CT - Connecticut</option>
-              <option value="DE">DE - Delaware</option>
-              <option value="FL">FL - Florida</option>
-              <option value="GA">GA - Georgia</option>
-              <option value="HI">HI - Hawaii</option>
-              <option value="ID">ID - Idaho</option>
-              <option value="IL">IL - Illinois</option>
-              <option value="IN">IN - Indiana</option>
-              <option value="IA">IA - Iowa</option>
-              <option value="KS">KS - Kansas</option>
-              <option value="KY">KY - Kentucky</option>
-              <option value="LA">LA - Louisiana</option>
-              <option value="ME">ME - Maine</option>
-              <option value="MD">MD - Maryland</option>
-              <option value="MA">MA - Massachusetts</option>
-              <option value="MI">MI - Michigan</option>
-              <option value="MN">MN - Minnesota</option>
-              <option value="MS">MS - Mississippi</option>
-              <option value="MO">MO - Missouri</option>
-              <option value="MT">MT - Montana</option>
-              <option value="NE">NE - Nebraska</option>
-              <option value="NV">NV - Nevada</option>
-              <option value="NH">NH - New Hampshire</option>
-              <option value="NJ">NJ - New Jersey</option>
-              <option value="NM">NM - New Mexico</option>
-              <option value="NY">NY - New York</option>
-              <option value="NC">NC - North Carolina</option>
-              <option value="ND">ND - North Dakota</option>
-              <option value="OH">OH - Ohio</option>
-              <option value="OK">OK - Oklahoma</option>
-              <option value="OR">OR - Oregon</option>
-              <option value="PA">PA - Pennsylvania</option>
-              <option value="RI">RI - Rhode Island</option>
-              <option value="SC">SC - South Carolina</option>
-              <option value="SD">SD - South Dakota</option>
-              <option value="TN">TN - Tennessee</option>
-              <option value="TX">TX - Texas</option>
-              <option value="UT">UT - Utah</option>
-              <option value="VT">VT - Vermont</option>
-              <option value="VA">VA - Virginia</option>
-              <option value="WA">WA - Washington</option>
-              <option value="WV">WV - West Virginia</option>
-              <option value="WI">WI - Wisconsin</option>
-              <option value="WY">WY - Wyoming</option>
-              <option value="DC">DC - Washington D.C.</option>
-            </select>
-            <span class="hint">2-letter US abbreviation</span>
+          <form id="bid-form">
+            <label for="phone">Caller number (Caller ID) <span>Required</span></label>
+            <div class="input-wrap">
+              <span aria-hidden="true">⌕</span>
+              <input id="phone" name="caller_number" type="tel" autocomplete="off" placeholder="+1 (212) 555-0123" maxlength="30" required aria-describedby="phone-help">
+            </div>
+            <p class="hint" id="phone-help">Use a 10-digit US number or country code.</p>
+
+            <div class="form-row">
+              <div>
+                <label for="state">State <span>Required</span></label>
+                <select id="state" name="caller_state" required>
+                  <option value="">Select state</option>
+                </select>
+              </div>
+              <div>
+                <label for="zip">ZIP code (ZIP Code) <span>Required</span></label>
+                <input id="zip" name="caller_zip" inputmode="numeric" autocomplete="off" placeholder="90210" maxlength="10" pattern="[0-9]{5}(-[0-9]{4})?" required>
+              </div>
+            </div>
+
+            <button class="submit" type="submit" id="submit-btn">
+              <span id="button-label">Find a bid (GET DID)</span>
+              <span aria-hidden="true">↗</span>
+            </button>
+            <p class="form-note">Submitting checks availability and requests a reservation.</p>
+            <div id="error" role="alert" hidden></div>
+          </form>
+
+          <div class="panel-footer">
+            <div><span class="lock" aria-hidden="true">🔒</span> Publisher: SureCall LLC (404c64b1)</div>
+            <a href="/tracking">View Live Tracking →</a>
           </div>
-        </div>
+        </section>
 
-        <!-- Submit Button -->
-        <button type="submit" id="submitBtn" class="btn-primary">
-          <span class="btn-text">GET DID</span>
-          <span class="spinner" aria-hidden="true"></span>
-        </button>
-      </form>
-
-      <!-- Results Area -->
-      <section id="resultContainer" class="result-container hidden" aria-live="polite">
-        <div class="result-header">Result:</div>
-
-        <!-- Success Result -->
-        <div id="successBox" class="result-box success hidden">
-          <div class="did-display">
-            <span class="did-label">DID:</span>
-            <span id="didValue" class="did-number">+1XXXXXXXXXX</span>
+        <!-- Panel 2: Destination Number / Result Card -->
+        <section class="glass result-card" aria-labelledby="destination-title" aria-busy="false">
+          <div class="result-top">
+            <h2 id="destination-title" class="eyebrow">DESTINATION NUMBER</h2>
+            <span class="badge" id="rtb-status-pill">STANDBY</span>
           </div>
-          <button type="button" id="copyBtn" class="btn-copy" title="Copy DID to clipboard">
-            Copy
-          </button>
-        </div>
 
-        <!-- No Target Result -->
-        <div id="noTargetBox" class="result-box neutral hidden">
-          <span class="message-text">No DID available</span>
-        </div>
+          <!-- Empty / Idle State -->
+          <div id="empty" class="empty" role="status">
+            <div class="orb" aria-hidden="true">
+              <div class="orbit"></div>
+              <div class="core">↗</div>
+            </div>
+            <h2 id="result-title">Your next connection,<br>one ping away.</h2>
+            <p id="empty-copy">Enter the caller details to find a destination number.</p>
+            <div class="mini-wave" aria-hidden="true">▂ ▃ ▅ ▂ ▆ ▃ ▂ ▅ ▃ ▂ ▅ ▂</div>
+          </div>
 
-        <!-- Error Result -->
-        <div id="errorBox" class="result-box error hidden">
-          <span id="errorMessage" class="message-text">Unable to get a DID. Please check the configuration and caller information.</span>
-        </div>
-      </section>
+          <!-- Reserved Number Result State -->
+          <div id="result" class="number-result" aria-live="polite" hidden>
+            <span class="reserved-badge">● DID Reserved & Tracked</span>
+            <strong id="number" class="destination-number"></strong>
+            <div class="number-actions">
+              <button id="copy" type="button">Copy number</button>
+              <a href="/tracking" class="btn-secondary">View in Tracking ↗</a>
+            </div>
+          </div>
+
+          <div class="panel-footer" style="margin-top: auto;">
+            <div>Inbound DID Reservation Active</div>
+            <div id="response-time-text">Ping ready</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="below">
+        <span><b>01</b> Enter caller details</span>
+        <i></i>
+        <span><b>02</b> Request a bid</span>
+        <i></i>
+        <span><b>03</b> Review & Track response</span>
+      </div>
     </main>
 
-    <footer class="app-footer">
-      <span>Protected by Server-Side Credential Isolation &amp; Rate Limiting</span>
+    <footer>
+      <span>© 2026 Ping Bid Post · SureCall LLC</span>
+      <span>A little signal. A new possibility. <a href="/tracking">Live Tracking Dashboard</a></span>
     </footer>
   </div>
-
-  <script src="app.js"></script>
 </body>
 </html>

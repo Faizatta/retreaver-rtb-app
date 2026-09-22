@@ -1,138 +1,138 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const rtbForm = document.getElementById('rtbForm');
-  const callerIdInput = document.getElementById('callerId');
-  const zipCodeInput = document.getElementById('zipCode');
-  const stateInput = document.getElementById('state');
-  const submitBtn = document.getElementById('submitBtn');
+'use strict';
 
-  const resultContainer = document.getElementById('resultContainer');
-  const successBox = document.getElementById('successBox');
-  const noTargetBox = document.getElementById('noTargetBox');
-  const errorBox = document.getElementById('errorBox');
-  const didValue = document.getElementById('didValue');
-  const errorMessage = document.getElementById('errorMessage');
-  const copyBtn = document.getElementById('copyBtn');
+const $ = id => document.getElementById(id);
 
-  function hideAllResults() {
-    resultContainer.classList.remove('hidden');
-    successBox.classList.add('hidden');
-    noTargetBox.classList.add('hidden');
-    errorBox.classList.add('hidden');
-  }
+// 50 US States & DC
+const states = 'AL:Alabama|AK:Alaska|AZ:Arizona|AR:Arkansas|CA:California|CO:Colorado|CT:Connecticut|DE:Delaware|DC:District of Columbia|FL:Florida|GA:Georgia|HI:Hawaii|ID:Idaho|IL:Illinois|IN:Indiana|IA:Iowa|KS:Kansas|KY:Kentucky|LA:Louisiana|ME:Maine|MD:Maryland|MA:Massachusetts|MI:Michigan|MN:Minnesota|MS:Mississippi|MO:Missouri|MT:Montana|NE:Nebraska|NV:Nevada|NH:New Hampshire|NJ:New Jersey|NM:New Mexico|NY:New York|NC:North Carolina|ND:North Dakota|OH:Ohio|OK:Oklahoma|OR:Oregon|PA:Pennsylvania|RI:Rhode Island|SC:South Carolina|SD:South Dakota|TN:Tennessee|TX:Texas|UT:Utah|VT:Vermont|VA:Virginia|WA:Washington|WV:West Virginia|WI:Wisconsin|WY:Wyoming';
 
-  function showSuccess(inboundNumber) {
-    hideAllResults();
-    didValue.textContent = inboundNumber;
-    successBox.classList.remove('hidden');
-  }
+states.split('|').forEach(entry => {
+  const [value, label] = entry.split(':');
+  $('state').add(new Option(`${label} (${value})`, value));
+});
 
-  function showNoTarget() {
-    hideAllResults();
-    noTargetBox.classList.remove('hidden');
-  }
+// Update live badge count
+async function updateTrackingCount() {
+  try {
+    const res = await fetch('/api/tracking');
+    const data = await res.json();
+    if (data.success && $('header-lead-count')) {
+      $('header-lead-count').textContent = data.count || 0;
+    }
+  } catch (e) {}
+}
 
-  function showError(msg) {
-    hideAllResults();
-    errorMessage.textContent = msg || 'Unable to get a DID. Please check the configuration and caller information.';
-    errorBox.classList.remove('hidden');
-  }
+updateTrackingCount();
 
-  function setLoading(loading) {
-    submitBtn.disabled = loading;
-    if (loading) {
-      submitBtn.classList.add('loading');
+const panel = document.querySelector('.result-card');
+
+$('bid-form').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const button = $('submit-btn');
+  const buttonLabel = $('button-label');
+  const errorBox = $('error');
+  const resultBox = $('result');
+  const emptyBox = $('empty');
+  const numberText = $('number');
+  const statusPill = $('rtb-status-pill');
+  const responseTimeText = $('response-time-text');
+
+  // Reset UI state
+  button.disabled = true;
+  buttonLabel.textContent = 'Finding number…';
+  errorBox.hidden = true;
+  resultBox.hidden = true;
+  emptyBox.hidden = false;
+  numberText.textContent = '';
+  statusPill.textContent = 'BIDDING…';
+  statusPill.style.color = '#c4b5fd';
+  
+  $('result-title').textContent = 'Finding your connection…';
+  $('empty-copy').textContent = 'This can take a few seconds.';
+  panel.classList.add('loading');
+  panel.setAttribute('aria-busy', 'true');
+
+  const startTime = Date.now();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  const payload = {
+    caller_number: $('phone').value.trim(),
+    caller_state: $('state').value.trim(),
+    caller_zip: $('zip').value.trim()
+  };
+
+  try {
+    const response = await fetch('/api/rtb', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error('The site could not complete this request. Please try again.');
+    }
+
+    const elapsed = Date.now() - startTime;
+    responseTimeText.textContent = `Auction latency: ${elapsed}ms`;
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error || 'The request could not be completed.');
+    }
+
+    const assignedNumber = data.inbound_number || data.number;
+
+    if (assignedNumber && typeof assignedNumber === 'string' && /^\+?[0-9]{7,16}$/.test(assignedNumber)) {
+      emptyBox.hidden = true;
+      resultBox.hidden = false;
+      numberText.textContent = assignedNumber;
+      $('copy').textContent = 'Copy number';
+      statusPill.textContent = 'RESERVED';
+      statusPill.style.color = '#4ade80';
+
+      // Update badge
+      updateTrackingCount();
+    } else if (data.status === 'no-target' || data.number === null || !data.success) {
+      statusPill.textContent = 'NO TARGET';
+      statusPill.style.color = '#fbbf24';
+      $('result-title').textContent = 'No number available.';
+      $('empty-copy').textContent = data.message || 'No campaign target available for this caller.';
     } else {
-      submitBtn.classList.remove('loading');
+      throw new Error('No destination number was returned. Please try again.');
     }
+
+  } catch (error) {
+    statusPill.textContent = 'ERROR';
+    statusPill.style.color = '#f87171';
+    errorBox.textContent = error.name === 'AbortError' ? 'The request timed out. Please try again.' : error.message;
+    errorBox.hidden = false;
+    $('result-title').textContent = 'Let’s try that again.';
+    $('empty-copy').textContent = 'Check the message below the form, then submit when ready.';
+  } finally {
+    clearTimeout(timeout);
+    button.disabled = false;
+    buttonLabel.textContent = 'Find a bid (GET DID)';
+    panel.classList.remove('loading');
+    panel.setAttribute('aria-busy', 'false');
   }
+});
 
-  // Auto-format phone numbers as user types
-  callerIdInput.addEventListener('input', (e) => {
-    let val = e.target.value;
-    // Allow digits, plus, parenthesis, spaces, dashes
-    val = val.replace(/[^\d+()\-\s]/g, '');
-    e.target.value = val;
-  });
-
-  // ZIP code input restrict to numbers & hyphen
-  zipCodeInput.addEventListener('input', (e) => {
-    let val = e.target.value;
-    val = val.replace(/[^\d-]/g, '');
-    e.target.value = val;
-  });
-
-  // Copy to clipboard
-  copyBtn.addEventListener('click', async () => {
-    const textToCopy = didValue.textContent;
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      const originalText = copyBtn.textContent;
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => {
-        copyBtn.textContent = originalText;
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
-  });
-
-  // Handle form submission
-  rtbForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const callerNumber = callerIdInput.value.trim();
-    const callerZip = zipCodeInput.value.trim();
-    const callerState = stateInput.value.trim();
-
-    // Client-side quick checks
-    if (!callerNumber) {
-      showError('Please enter a Caller ID / Phone Number.');
-      callerIdInput.focus();
-      return;
-    }
-
-    if (!callerZip) {
-      showError('Please enter a ZIP code.');
-      zipCodeInput.focus();
-      return;
-    }
-
-    if (!callerState) {
-      showError('Please select a State.');
-      stateInput.focus();
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/rtb', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          caller_number: callerNumber,
-          caller_zip: callerZip,
-          caller_state: callerState
-        })
-      });
-
-      const data = await response.json().catch(() => null);
-
-      if (response.ok && data && data.success && data.inbound_number) {
-        showSuccess(data.inbound_number);
-      } else if (data && data.message === 'No DID available') {
-        showNoTarget();
-      } else if (data && data.message) {
-        showError(data.message);
-      } else {
-        showError('Unable to get a DID. Please check the configuration and caller information.');
-      }
-    } catch (networkErr) {
-      showError('Unable to connect to the server. Please check your network connection.');
-    } finally {
-      setLoading(false);
-    }
-  });
+// Copy number to clipboard
+$('copy').addEventListener('click', async () => {
+  const text = $('number').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    $('copy').textContent = '✓ Copied';
+    setTimeout(() => {
+      $('copy').textContent = 'Copy number';
+    }, 2000);
+  } catch {
+    $('copy').textContent = 'Select number to copy';
+  }
 });
