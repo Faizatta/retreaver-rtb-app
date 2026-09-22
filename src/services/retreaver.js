@@ -18,10 +18,18 @@ export async function requestRtbReservation(params, options = {}) {
 
   if (isDemo) {
     // Simulate real RTB auction latency
-    await new Promise(res => setTimeout(res, 400));
+    await new Promise(res => setTimeout(res, 350));
+
+    // Generate a unique, realistic toll-free DID reservation for each lead
+    const tollFreePrefixes = ['800', '888', '877', '866', '855', '844', '833'];
+    const prefix = tollFreePrefixes[Math.floor(Math.random() * tollFreePrefixes.length)];
+    const mid = String(Math.floor(200 + Math.random() * 800));
+    const end = String(Math.floor(1000 + Math.random() * 9000));
+    const dynamicDid = `+1${prefix}${mid}${end}`;
+
     return {
       status: 'reserved',
-      inbound_number: '+18772435010'
+      inbound_number: dynamicDid
     };
   }
 
