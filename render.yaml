@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: retreaver-rtb-app
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: RETREAVER_RTB_KEY
+        sync: false
+      - key: RETREAVER_PUBLISHER_ID
+        sync: false
+      - key: RETREAVER_CAMPAIGN_ID
+        sync: false
+      - key: DEMO_MODE
+        value: "true"
