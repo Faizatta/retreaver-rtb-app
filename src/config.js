@@ -29,11 +29,11 @@ export function validateConfig(env = process.env) {
 
   return {
     port: parseInt(env.PORT || '3000', 10),
-    retreaverRtbKey: env.RETREAVER_RTB_KEY.trim(),
-    retreaverPublisherId: env.RETREAVER_PUBLISHER_ID.trim(),
-    retreaverCampaignId: env.RETREAVER_CAMPAIGN_ID ? env.RETREAVER_CAMPAIGN_ID.trim() : undefined,
+    retreaverRtbKey: env.RETREAVER_RTB_KEY ? env.RETREAVER_RTB_KEY.trim() : '01d32947-f6a8-4bff-a47f-b8b660da49a4',
+    retreaverPublisherId: env.RETREAVER_PUBLISHER_ID ? env.RETREAVER_PUBLISHER_ID.trim() : '404c64b1',
+    retreaverCampaignId: env.RETREAVER_CAMPAIGN_ID ? env.RETREAVER_CAMPAIGN_ID.trim() : 'd236359b',
     retreaverEndpoint: env.RETREAVER_RTB_ENDPOINT || 'https://rtb.retreaver.com/rtbs.json',
-    demoMode: env.DEMO_MODE === 'true',
+    demoMode: env.DEMO_MODE !== 'false',
     nodeEnv: env.NODE_ENV || 'development'
   };
 }
@@ -55,11 +55,11 @@ try {
     // In serverless/test mode, supply safe fallback config so Vercel functions never crash with 500
     config = {
       port: 3000,
-      retreaverRtbKey: process.env.RETREAVER_RTB_KEY || 'demo_key',
-      retreaverPublisherId: process.env.RETREAVER_PUBLISHER_ID || 'demo_pub',
-      retreaverCampaignId: process.env.RETREAVER_CAMPAIGN_ID,
+      retreaverRtbKey: process.env.RETREAVER_RTB_KEY || '01d32947-f6a8-4bff-a47f-b8b660da49a4',
+      retreaverPublisherId: process.env.RETREAVER_PUBLISHER_ID || '404c64b1',
+      retreaverCampaignId: process.env.RETREAVER_CAMPAIGN_ID || 'd236359b',
       retreaverEndpoint: 'https://rtb.retreaver.com/rtbs.json',
-      demoMode: process.env.DEMO_MODE === 'true',
+      demoMode: process.env.DEMO_MODE !== 'false',
       nodeEnv: 'production'
     };
   }
