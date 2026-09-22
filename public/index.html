@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retreaver RTB Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="app-header">
+      <div class="badge">Retreaver RTB</div>
+      <h1>Inbound DID Reservation</h1>
+      <p class="subtitle">Submit caller details to request a real-time bidding inbound destination number.</p>
+    </header>
+
+    <main class="card">
+      <form id="rtbForm" novalidate>
+        <!-- Caller ID Field -->
+        <div class="form-group">
+          <label for="callerId">Caller ID / Phone Number</label>
+          <div class="input-wrapper">
+            <input
+              type="tel"
+              id="callerId"
+              name="caller_number"
+              placeholder="+1 (800) 555-0199"
+              required
+              autocomplete="tel"
+            />
+          </div>
+          <span class="hint">E.164 format or 10-digit US number</span>
+        </div>
+
+        <!-- Location Group (ZIP and State) -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="zipCode">ZIP Code</label>
+            <input
+              type="text"
+              id="zipCode"
+              name="caller_zip"
+              placeholder="90210"
+              maxlength="10"
+              required
+            />
+            <span class="hint">5-digit US postal code</span>
+          </div>
+
+          <div class="form-group flex-1">
+            <label for="state">State</label>
+            <select id="state" name="caller_state" required>
+              <option value="" disabled selected>Select State</option>
+              <option value="AL">AL - Alabama</option>
+              <option value="AK">AK - Alaska</option>
+              <option value="AZ">AZ - Arizona</option>
+              <option value="AR">AR - Arkansas</option>
+              <option value="CA">CA - California</option>
+              <option value="CO">CO - Colorado</option>
+              <option value="CT">CT - Connecticut</option>
+              <option value="DE">DE - Delaware</option>
+              <option value="FL">FL - Florida</option>
+              <option value="GA">GA - Georgia</option>
+              <option value="HI">HI - Hawaii</option>
+              <option value="ID">ID - Idaho</option>
+              <option value="IL">IL - Illinois</option>
+              <option value="IN">IN - Indiana</option>
+              <option value="IA">IA - Iowa</option>
+              <option value="KS">KS - Kansas</option>
+              <option value="KY">KY - Kentucky</option>
+              <option value="LA">LA - Louisiana</option>
+              <option value="ME">ME - Maine</option>
+              <option value="MD">MD - Maryland</option>
+              <option value="MA">MA - Massachusetts</option>
+              <option value="MI">MI - Michigan</option>
+              <option value="MN">MN - Minnesota</option>
+              <option value="MS">MS - Mississippi</option>
+              <option value="MO">MO - Missouri</option>
+              <option value="MT">MT - Montana</option>
+              <option value="NE">NE - Nebraska</option>
+              <option value="NV">NV - Nevada</option>
+              <option value="NH">NH - New Hampshire</option>
+              <option value="NJ">NJ - New Jersey</option>
+              <option value="NM">NM - New Mexico</option>
+              <option value="NY">NY - New York</option>
+              <option value="NC">NC - North Carolina</option>
+              <option value="ND">ND - North Dakota</option>
+              <option value="OH">OH - Ohio</option>
+              <option value="OK">OK - Oklahoma</option>
+              <option value="OR">OR - Oregon</option>
+              <option value="PA">PA - Pennsylvania</option>
+              <option value="RI">RI - Rhode Island</option>
+              <option value="SC">SC - South Carolina</option>
+              <option value="SD">SD - South Dakota</option>
+              <option value="TN">TN - Tennessee</option>
+              <option value="TX">TX - Texas</option>
+              <option value="UT">UT - Utah</option>
+              <option value="VT">VT - Vermont</option>
+              <option value="VA">VA - Virginia</option>
+              <option value="WA">WA - Washington</option>
+              <option value="WV">WV - West Virginia</option>
+              <option value="WI">WI - Wisconsin</option>
+              <option value="WY">WY - Wyoming</option>
+              <option value="DC">DC - Washington D.C.</option>
+            </select>
+            <span class="hint">2-letter US abbreviation</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn" class="btn-primary">
+          <span class="btn-text">GET DID</span>
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <!-- Results Area -->
+      <section id="resultContainer" class="result-container hidden" aria-live="polite">
+        <div class="result-header">Result:</div>
+
+        <!-- Success Result -->
+        <div id="successBox" class="result-box success hidden">
+          <div class="did-display">
+            <span class="did-label">DID:</span>
+            <span id="didValue" class="did-number">+1XXXXXXXXXX</span>
+          </div>
+          <button type="button" id="copyBtn" class="btn-copy" title="Copy DID to clipboard">
+            Copy
+          </button>
+        </div>
+
+        <!-- No Target Result -->
+        <div id="noTargetBox" class="result-box neutral hidden">
+          <span class="message-text">No DID available</span>
+        </div>
+
+        <!-- Error Result -->
+        <div id="errorBox" class="result-box error hidden">
+          <span id="errorMessage" class="message-text">Unable to get a DID. Please check the configuration and caller information.</span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Protected by Server-Side Credential Isolation &amp; Rate Limiting</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
