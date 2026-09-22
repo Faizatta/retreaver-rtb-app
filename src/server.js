@@ -79,3 +79,5 @@ if (process.argv[1] === __filename) {
     console.log(`[RTB Server] Environment verified. Secrets securely isolated.`);
   });
 }
+
+export default app;
