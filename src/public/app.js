@@ -23,7 +23,7 @@ const statesData = [
   ['WV', 'West Virginia', '25301'], ['WI', 'Wisconsin', '53201'], ['WY', 'Wyoming', '82001']
 ];
 
-// 11 Approved Buyer States: AL, FL, IN, KS, MS, MT, NE, OK, TX, UT, WI
+// Internally stored approved buyer states (11 states)
 const approvedStates = [
   ['AL', 'Alabama', '35004', '205'],
   ['FL', 'Florida', '33101', '305'],
@@ -39,22 +39,42 @@ const approvedStates = [
 ];
 const approvedCodes = new Set(approvedStates.map(s => s[0]));
 
-// Populate state options with optgroups
+// Populate clean standard state options (no special UI/optgroups)
 const stateSelect = $('state');
-
-const approvedGroup = document.createElement('optgroup');
-approvedGroup.label = '★ Approved Buyer States (11 Active)';
-approvedStates.forEach(([code, name]) => {
-  approvedGroup.appendChild(new Option(`${name} (${code})`, code));
+statesData.forEach(([code, name]) => {
+  stateSelect.add(new Option(`${name} (${code})`, code));
 });
-stateSelect.appendChild(approvedGroup);
 
-const otherGroup = document.createElement('optgroup');
-otherGroup.label = 'Other US States';
-statesData.filter(([code]) => !approvedCodes.has(code)).forEach(([code, name]) => {
-  otherGroup.appendChild(new Option(`${name} (${code})`, code));
-});
-stateSelect.appendChild(otherGroup);
+// Internal buyer availability checker (Hours: 9am-6pm EST, Mon-Fri + Approved states)
+function checkBuyerAvailability(stateCode) {
+  if (!approvedCodes.has(stateCode)) {
+    return {
+      allowed: false,
+      reason: `State (${stateCode}) is out of service. Buyer is not active in this state.`
+    };
+  }
+
+  const estStr = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+  const estDate = new Date(estStr);
+  const day = estDate.getDay();
+  const minutes = estDate.getHours() * 60 + estDate.getMinutes();
+
+  if (day === 0 || day === 6) {
+    return {
+      allowed: false,
+      reason: 'Buyer is closed on weekends. Operating hours: 9:00 AM – 6:00 PM EST (Mon–Fri).'
+    };
+  }
+
+  if (minutes < 540 || minutes >= 1080) {
+    return {
+      allowed: false,
+      reason: 'Buyer is currently offline / closed. Operating hours are 9:00 AM – 6:00 PM EST.'
+    };
+  }
+
+  return { allowed: true };
+}
 
 // View Navigation & Tab Controller
 function switchView(viewName) {
@@ -118,6 +138,26 @@ bidForm.addEventListener('submit', async event => {
   const latencyVal = $('latency-val');
   const uuidVal = $('uuid-val');
   const footerStatus = $('telemetry-footer-status');
+
+  const stateVal = $('state').value.trim();
+  const availability = checkBuyerAvailability(stateVal);
+
+  if (!availability.allowed) {
+    emptyState.hidden = false;
+    reservedState.hidden = true;
+    numberDisplay.textContent = '';
+    statusPill.textContent = 'NO CALL BUYER';
+    statusPill.className = 'status-badge';
+    statusPill.style.background = '#3f1d24';
+    statusPill.style.color = '#fca5a5';
+
+    errorBox.textContent = availability.reason;
+    errorBox.hidden = false;
+
+    $('result-title').textContent = 'Buyer Unavailable';
+    $('result-description').textContent = availability.reason;
+    return;
+  }
 
   // Set loading state
   button.disabled = true;
