@@ -23,11 +23,38 @@ const statesData = [
   ['WV', 'West Virginia', '25301'], ['WI', 'Wisconsin', '53201'], ['WY', 'Wyoming', '82001']
 ];
 
-// Populate state options
+// 11 Approved Buyer States: AL, FL, IN, KS, MS, MT, NE, OK, TX, UT, WI
+const approvedStates = [
+  ['AL', 'Alabama', '35004', '205'],
+  ['FL', 'Florida', '33101', '305'],
+  ['IN', 'Indiana', '46201', '317'],
+  ['KS', 'Kansas', '66101', '913'],
+  ['MS', 'Mississippi', '39201', '601'],
+  ['MT', 'Montana', '59601', '406'],
+  ['NE', 'Nebraska', '68101', '402'],
+  ['OK', 'Oklahoma', '73101', '405'],
+  ['TX', 'Texas', '75201', '214'],
+  ['UT', 'Utah', '84101', '801'],
+  ['WI', 'Wisconsin', '53201', '414']
+];
+const approvedCodes = new Set(approvedStates.map(s => s[0]));
+
+// Populate state options with optgroups
 const stateSelect = $('state');
-statesData.forEach(([code, name]) => {
-  stateSelect.add(new Option(`${name} (${code})`, code));
+
+const approvedGroup = document.createElement('optgroup');
+approvedGroup.label = '★ Approved Buyer States (11 Active)';
+approvedStates.forEach(([code, name]) => {
+  approvedGroup.appendChild(new Option(`${name} (${code})`, code));
 });
+stateSelect.appendChild(approvedGroup);
+
+const otherGroup = document.createElement('optgroup');
+otherGroup.label = 'Other US States';
+statesData.filter(([code]) => !approvedCodes.has(code)).forEach(([code, name]) => {
+  otherGroup.appendChild(new Option(`${name} (${code})`, code));
+});
+stateSelect.appendChild(otherGroup);
 
 // View Navigation & Tab Controller
 function switchView(viewName) {
@@ -55,16 +82,15 @@ if (window.location.pathname.includes('/tracking') || window.location.hash === '
   switchView('tracking');
 }
 
-// Quick Sample Caller Filler
+// Quick Sample Caller Filler (Picks from approved buyer states)
 $('sample-caller-btn').addEventListener('click', () => {
-  const randomState = statesData[Math.floor(Math.random() * statesData.length)];
-  const randomArea = String(Math.floor(200 + Math.random() * 799));
+  const randomApproved = approvedStates[Math.floor(Math.random() * approvedStates.length)];
   const randomMid = String(Math.floor(200 + Math.random() * 799));
   const randomLast = String(Math.floor(1000 + Math.random() * 9000));
   
-  $('phone').value = `+1 (${randomArea}) ${randomMid}-${randomLast}`;
-  $('state').value = randomState[0];
-  $('zip').value = randomState[2];
+  $('phone').value = `+1 (${randomApproved[3]}) ${randomMid}-${randomLast}`;
+  $('state').value = randomApproved[0];
+  $('zip').value = randomApproved[2];
 });
 
 // Format phone display
