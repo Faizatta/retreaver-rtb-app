@@ -263,7 +263,7 @@ function renderTrackingTable(leads) {
         <td>
           <span class="status-chip">Reserved</span>
         </td>
-        <td style="color: var(--text-muted); font-size: 12px;">${lead.publisher || 'SureCall LLC'}</td>
+        <td style="color: var(--text-muted); font-size: 12px;">${lead.publisher || 'ID: 404c64b1'}</td>
       </tr>
     `;
   }).join('');

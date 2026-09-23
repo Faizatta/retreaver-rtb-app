@@ -31,7 +31,7 @@ try {
 /**
  * Add a tracked RTB lead reservation
  */
-export function recordLead({ caller_number, caller_state, caller_zip, destination_number, retreaver_uuid, status = 'Reserved', publisher = 'SureCall LLC' }) {
+export function recordLead({ caller_number, caller_state, caller_zip, destination_number, retreaver_uuid, status = 'Reserved', publisher = 'ID: 404c64b1' }) {
   const lead = {
     id: `lead_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     timestamp: new Date().toISOString(),
