@@ -48,10 +48,22 @@ export default async function handler(req, res) {
     }
 
     if (result.status === 'no-target') {
+      if (result.retreaver_uuid) {
+        recordLead({
+          caller_number: validatedParams.caller_number,
+          caller_state: validatedParams.caller_state,
+          caller_zip: validatedParams.caller_zip,
+          destination_number: 'No DID Available',
+          retreaver_uuid: result.retreaver_uuid,
+          status: 'Rejected / Shielded'
+        });
+      }
+
       return res.status(200).json({
         success: false,
         message: 'No DID available',
-        number: null
+        number: null,
+        retreaver_uuid: result.retreaver_uuid
       });
     }
 

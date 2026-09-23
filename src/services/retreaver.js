@@ -22,6 +22,7 @@ export async function requestRtbReservation(params, options = {}) {
   const key = options.key || (config ? config.retreaverRtbKey : process.env.RETREAVER_RTB_KEY) || '01d32947-f6a8-4bff-a47f-b8b660da49a4';
   const publisherId = options.publisherId || (config ? config.retreaverPublisherId : process.env.RETREAVER_PUBLISHER_ID) || '404c64b1';
   const campaignId = options.campaignId || (config ? config.retreaverCampaignId : process.env.RETREAVER_CAMPAIGN_ID) || 'd236359b';
+  const isDemo = options.demoMode !== undefined ? options.demoMode : ((config && config.demoMode) || process.env.DEMO_MODE === 'true');
 
   const payload = {
     key,
@@ -62,14 +63,6 @@ export async function requestRtbReservation(params, options = {}) {
 
     const data = await response.json();
 
-    // In unit test mocks with mock endpoint, adhere to test contract
-    if (options.endpoint && (data.status === 'no-target' || data.status === 'rejected')) {
-      return {
-        status: 'no-target',
-        message: 'No DID available'
-      };
-    }
-
     // Check for successful live reservation with inbound_number from Retreaver
     if (data && data.inbound_number) {
       return {
@@ -79,9 +72,18 @@ export async function requestRtbReservation(params, options = {}) {
       };
     }
 
-    // Live ping reached Retreaver! If no campaign number was purchased in pool,
-    // Retreaver returns rejected/no-target with a real auction UUID.
-    // We log the live UUID and provide a toll-free DID so the user gets immediate on-screen tracking.
+    // In pure live mode: if Retreaver returns rejected or no-target
+    if (!isDemo || options.endpoint) {
+      if (data && (data.status === 'no-target' || data.status === 'rejected')) {
+        return {
+          status: 'no-target',
+          message: 'No DID available',
+          retreaver_uuid: data.uuid
+        };
+      }
+    }
+
+    // Fallback mode if demo/testing
     const dynamicDid = generateFallbackDid();
     return {
       status: 'reserved',
@@ -90,8 +92,7 @@ export async function requestRtbReservation(params, options = {}) {
     };
 
   } catch (err) {
-    // If unit test mock expects error
-    if (options.endpoint) {
+    if (options.endpoint || !isDemo) {
       console.error(`[RTB Service] Communication error: ${err.message}`);
       return {
         status: 'error',
@@ -99,7 +100,6 @@ export async function requestRtbReservation(params, options = {}) {
       };
     }
 
-    // Fallback in case of network timeout
     return {
       status: 'reserved',
       inbound_number: generateFallbackDid()
