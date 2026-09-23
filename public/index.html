@@ -3,129 +3,252 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Check call bids with Ping Bid Post — Retreaver RTB Inbound DID Reservation Workspace.">
-  <title>Ping Bid Post — Bid workspace</title>
-  <link rel="stylesheet" href="styles.css?v=3">
-  <script src="app.js?v=3" defer></script>
+  <meta name="description" content="Ultra-Modern Retreaver RTB Bidding & Live Lead Tracking Workspace for SureCall LLC.">
+  <title>SureCall RTB — Real-Time Bidding Workspace</title>
+  <link rel="stylesheet" href="styles.css?v=4">
+  <script src="app.js?v=4" defer></script>
 </head>
 <body>
-  <div class="ambient" aria-hidden="true"></div>
-  <div class="shell">
+  <div class="ambient-grid"></div>
+
+  <div class="container">
+    <!-- Top Navigation Header -->
     <header>
-      <a class="brand" href="./" aria-label="Ping Bid Post home">
-        <span class="brand-icon" aria-hidden="true">p<span>↗</span></span>
-        <span>ping<span class="light">bidpost</span><small>SureCall CALL BIDDING WORKSPACE</small></span>
+      <a href="./" class="brand-group">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="brand-titles">
+          <div class="brand-name">SureCall <span style="font-weight: 400; color: #94a3b8;">RTB</span></div>
+          <div class="brand-sub">Call Bidding Workspace</div>
+        </div>
       </a>
-      <div class="header-right">
-        <a href="/tracking" class="nav-link" id="tracking-nav-btn">
+
+      <!-- View Switcher Tabs -->
+      <nav class="nav-tabs" aria-label="Workspace views">
+        <button class="nav-tab active" id="tab-console-btn" type="button">
+          <span>⚡ Bid Console</span>
+        </button>
+        <button class="nav-tab" id="tab-tracking-btn" type="button">
           <span>📊 Live Tracking</span>
-          <span class="badge-count" id="header-lead-count">0</span>
-        </a>
-        <div class="domain">pingbidpost.world</div>
+          <span class="tab-badge" id="nav-lead-counter">0</span>
+        </button>
+      </nav>
+
+      <div class="engine-pill">
+        <span class="status-dot"></span>
+        <span>Retreaver RTB Online</span>
       </div>
     </header>
 
-    <main>
-      <div class="intro">
-        <p class="eyebrow">THE BID WORKSPACE <span>01 / LIVE REQUEST</span></p>
-        <h1>A better connection<br>starts with a <em>ping.</em></h1>
-        <p>Enter your caller details. Find your destination number.</p>
-      </div>
+    <!-- VIEW 1: BID CONSOLE (DEFAULT) -->
+    <div id="view-console">
+      <section class="hero">
+        <div class="hero-pill">
+          <span>⚡ High-Frequency Retreaver RTB</span>
+        </div>
+        <h1>Real-time phone bidding,<br>instantly connected.</h1>
+        <p>Input caller intelligence, execute the RTB reservation, and receive an active inbound DID destination in milliseconds.</p>
+      </section>
 
-      <div class="workspace">
-        <!-- Panel 1: Input Request Form -->
-        <section class="glass form-card" aria-labelledby="form-title">
-          <div class="panel-head">
-            <span class="step">01</span>
-            <div>
-              <h2 id="form-title">Make your next move.</h2>
-              <p>Start a new bid request (Inbound DID Reservation)</p>
+      <div class="workspace-grid">
+        <!-- Panel 1: Input Form -->
+        <section class="card" aria-labelledby="console-form-heading">
+          <div class="card-header">
+            <div class="card-header-left">
+              <span class="card-step-num">01</span>
+              <div>
+                <h2 id="console-form-heading" class="card-title">Inbound DID Reservation</h2>
+                <div class="card-sub">Caller Telemetry Parameters</div>
+              </div>
             </div>
-            <span class="corner-mark" aria-hidden="true">↗</span>
+            <button type="button" class="quick-fill-btn" id="sample-caller-btn">
+              <span>⚡ Load Sample Caller</span>
+            </button>
           </div>
 
           <form id="bid-form">
-            <label for="phone">Caller number (Caller ID) <span>Required</span></label>
-            <div class="input-wrap">
-              <span aria-hidden="true">⌕</span>
-              <input id="phone" name="caller_number" type="tel" autocomplete="off" placeholder="+1 (212) 555-0123" maxlength="30" required aria-describedby="phone-help">
+            <div class="form-group">
+              <div class="label-row">
+                <label for="phone">Caller number (Caller ID)</label>
+                <span class="badge-required">Required</span>
+              </div>
+              <div class="input-container has-prefix">
+                <span class="input-prefix-icon" aria-hidden="true">⌕</span>
+                <input id="phone" name="caller_number" type="tel" autocomplete="off" placeholder="+1 (212) 555-0123" maxlength="30" required>
+              </div>
             </div>
-            <p class="hint" id="phone-help">Use a 10-digit US number or country code.</p>
 
-            <div class="form-row">
-              <div>
-                <label for="state">State <span>Required</span></label>
+            <div class="row-2">
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="state">State</label>
+                  <span class="badge-required">Required</span>
+                </div>
                 <select id="state" name="caller_state" required>
                   <option value="">Select state</option>
                 </select>
               </div>
-              <div>
-                <label for="zip">ZIP code (ZIP Code) <span>Required</span></label>
-                <input id="zip" name="caller_zip" inputmode="numeric" autocomplete="off" placeholder="90210" maxlength="10" pattern="[0-9]{5}(-[0-9]{4})?" required>
+
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="zip">ZIP code (ZIP Code)</label>
+                  <span class="badge-required">Required</span>
+                </div>
+                <input id="zip" name="caller_zip" inputmode="numeric" autocomplete="off" placeholder="10001" maxlength="10" pattern="[0-9]{5}(-[0-9]{4})?" required>
               </div>
             </div>
 
-            <button class="submit" type="submit" id="submit-btn">
-              <span id="button-label">Find a bid (GET DID)</span>
-              <span aria-hidden="true">↗</span>
+            <button class="btn-primary" type="submit" id="submit-btn">
+              <span id="button-label">Generate Inbound DID (GET DID)</span>
+              <span class="key-hint">Enter ↵</span>
             </button>
-            <p class="form-note">Submitting checks availability and requests a reservation.</p>
-            <div id="error" role="alert" hidden></div>
+
+            <div id="error-box" role="alert" hidden></div>
           </form>
 
-          <div class="panel-footer">
-            <div><span class="lock" aria-hidden="true">🔒</span> Publisher: SureCall LLC (404c64b1)</div>
-            <a href="/tracking">View Live Tracking →</a>
+          <div class="form-footer-meta">
+            <div>Verified Publisher: <strong>SureCall LLC (404c64b1)</strong></div>
+            <a href="#" id="switch-to-tracking-link">View Live Stream →</a>
           </div>
         </section>
 
-        <!-- Panel 2: Destination Number / Result Card -->
-        <section class="glass result-card" aria-labelledby="destination-title" aria-busy="false">
-          <div class="result-top">
-            <h2 id="destination-title" class="eyebrow">DESTINATION NUMBER</h2>
-            <span class="badge" id="rtb-status-pill">STANDBY</span>
-          </div>
-
-          <!-- Empty / Idle State -->
-          <div id="empty" class="empty" role="status">
-            <div class="orb" aria-hidden="true">
-              <div class="orbit"></div>
-              <div class="core">↗</div>
+        <!-- Panel 2: Destination Telemetry -->
+        <section class="card telemetry-card" aria-labelledby="telemetry-heading">
+          <div class="telemetry-header">
+            <div class="card-header-left">
+              <span class="card-step-num">02</span>
+              <div>
+                <h2 id="telemetry-heading" class="card-title">DESTINATION NUMBER</h2>
+                <div class="card-sub">RTB Inbound Allocation</div>
+              </div>
             </div>
-            <h2 id="result-title">Your next connection,<br>one ping away.</h2>
-            <p id="empty-copy">Enter the caller details to find a destination number.</p>
-            <div class="mini-wave" aria-hidden="true">▂ ▃ ▅ ▂ ▆ ▃ ▂ ▅ ▃ ▂ ▅ ▂</div>
+            <span class="status-badge-lg" id="rtb-status-pill">STANDBY</span>
           </div>
 
-          <!-- Reserved Number Result State -->
-          <div id="result" class="number-result" aria-live="polite" hidden>
-            <span class="reserved-badge">● DID Reserved & Tracked</span>
-            <strong id="number" class="destination-number"></strong>
-            <div class="number-actions">
-              <button id="copy" type="button">Copy number</button>
-              <a href="/tracking" class="btn-secondary">View in Tracking ↗</a>
+          <!-- Idle Radar State -->
+          <div id="empty-state" class="telemetry-body">
+            <div class="radar-box">
+              <div class="radar-ring"></div>
+              <div class="radar-ring-inner"></div>
+              <div class="radar-center">↗</div>
+            </div>
+            <h3 id="result-title">Ready for Next Auction</h3>
+            <p id="result-description">Submit caller telemetry on the left to trigger the real-time bid and reserve your destination DID.</p>
+          </div>
+
+          <!-- Active Destination DID Result -->
+          <div id="reserved-state" class="telemetry-body reserved-display" hidden>
+            <span class="status-chip">● DID Active & Reserved</span>
+            <div id="number" class="destination-number-lg"></div>
+            <div class="actions-cluster">
+              <button id="copy-btn" class="btn-copy" type="button">
+                <span>Copy Destination Number</span>
+              </button>
+            </div>
+
+            <div class="telemetry-meta-box">
+              <div class="meta-item">
+                <span class="meta-label">Auction Latency</span>
+                <span class="meta-val" id="latency-val">--</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Retreaver UUID</span>
+                <span class="meta-val" id="uuid-val">Live RTB</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Publisher</span>
+                <span class="meta-val">SureCall LLC</span>
+              </div>
             </div>
           </div>
 
-          <div class="panel-footer" style="margin-top: auto;">
-            <div>Inbound DID Reservation Active</div>
-            <div id="response-time-text">Ping ready</div>
+          <div class="form-footer-meta" style="margin-top: auto;">
+            <div>Campaign: <strong>d236359b (RTB Inbound)</strong></div>
+            <div id="telemetry-footer-status">Auction Ready</div>
           </div>
         </section>
       </div>
+    </div>
 
-      <div class="below">
-        <span><b>01</b> Enter caller details</span>
-        <i></i>
-        <span><b>02</b> Request a bid</span>
-        <i></i>
-        <span><b>03</b> Review & Track response</span>
+    <!-- VIEW 2: REAL-TIME TRACKING DASHBOARD -->
+    <div id="view-tracking" class="tracking-view" hidden>
+      <section class="hero" style="padding-bottom: 28px;">
+        <div class="hero-pill">
+          <span>📊 Real-Time Bid Telemetry Stream</span>
+        </div>
+        <h1>Live Lead & DID Tracking</h1>
+        <p>Continuous monitoring stream of all caller numbers, assigned toll-free DIDs, geo routing, and Retreaver auction UUIDs.</p>
+      </section>
+
+      <!-- Stats Bar -->
+      <div class="stats-deck">
+        <div class="stat-pill-card">
+          <div class="stat-title">Total Bids Processed</div>
+          <div class="stat-num" id="total-pings-val">0</div>
+        </div>
+        <div class="stat-pill-card">
+          <div class="stat-title">Active DIDs Reserved</div>
+          <div class="stat-num" id="active-dids-val">0</div>
+        </div>
+        <div class="stat-pill-card">
+          <div class="stat-title">Avg Latency</div>
+          <div class="stat-num">~280ms</div>
+        </div>
+        <div class="stat-pill-card">
+          <div class="stat-title">Publisher Profile</div>
+          <div style="font-size: 18px; font-weight: 700; color: #a5b4fc; margin-top: 4px;">SureCall LLC</div>
+          <div style="font-size: 11px; color: var(--text-dim);">404c64b1 · Campaign d236359b</div>
+        </div>
       </div>
-    </main>
 
+      <!-- Table Toolbar -->
+      <div class="table-toolbar">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="tracking-search-input" placeholder="Search by Caller ID, State, or DID..." autocomplete="off">
+        </div>
+        <div class="toolbar-buttons">
+          <button class="btn-secondary" id="refresh-tracking-btn" type="button">
+            <span>↻ Refresh Stream</span>
+          </button>
+          <button class="btn-secondary" id="clear-tracking-btn" type="button" style="color: #fda4af;">
+            <span>✕ Clear History</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modern Data Table -->
+      <div class="table-frame">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Caller ID</th>
+              <th>State / ZIP</th>
+              <th>Destination DID</th>
+              <th>Retreaver UUID</th>
+              <th>Status</th>
+              <th>Publisher</th>
+            </tr>
+          </thead>
+          <tbody id="tracking-tbody">
+            <tr>
+              <td colspan="7" class="empty-cell">
+                Loading live tracking stream...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Global Footer -->
     <footer>
-      <span>© 2026 Ping Bid Post · SureCall LLC</span>
-      <span>A little signal. A new possibility. <a href="/tracking">Live Tracking Dashboard</a></span>
+      <span>© 2026 SureCall LLC · Retreaver Real-Time Bidding Engine</span>
+      <div>
+        <a href="https://github.com/Faizatta/retreaver-rtb-app" target="_blank" rel="noopener">GitHub Repository</a>
+      </div>
     </footer>
   </div>
 </body>
