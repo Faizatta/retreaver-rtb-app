@@ -34,13 +34,15 @@ router.post('/rtb', async (req, res) => {
         caller_number: validatedParams.caller_number,
         caller_state: validatedParams.caller_state,
         caller_zip: validatedParams.caller_zip,
-        destination_number: result.inbound_number
+        destination_number: result.inbound_number,
+        retreaver_uuid: result.retreaver_uuid
       });
 
       return res.status(200).json({
         success: true,
         inbound_number: result.inbound_number,
-        number: result.inbound_number // for pingbidpost.world client compatibility
+        number: result.inbound_number, // for pingbidpost.world client compatibility
+        retreaver_uuid: result.retreaver_uuid
       });
     }
 

@@ -72,13 +72,14 @@
                 <th>CALLER ID</th>
                 <th>STATE / ZIP</th>
                 <th>DESTINATION DID</th>
+                <th>RETREAVER UUID</th>
                 <th>STATUS</th>
                 <th>PUBLISHER</th>
               </tr>
             </thead>
             <tbody id="tracking-tbody">
               <tr>
-                <td colspan="6" class="empty-state-box">
+                <td colspan="7" class="empty-state-box">
                   No reservations logged yet. Go to the <a href="/" style="color: #b8a7ff;">Bid Workspace</a> to create your first reservation!
                 </td>
               </tr>
@@ -110,7 +111,7 @@
         if (leads.length === 0) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="6" class="empty-state-box">
+              <td colspan="7" class="empty-state-box">
                 No reservations logged yet. Go to the <a href="/" style="color: #b8a7ff;">Bid Workspace</a> to create your first reservation!
               </td>
             </tr>
@@ -122,6 +123,7 @@
           const date = new Date(item.timestamp);
           const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
           const dateStr = date.toLocaleDateString();
+          const uuidDisplay = item.retreaver_uuid ? `<span title="${item.retreaver_uuid}" style="font-family: monospace; font-size: 11px; color: #a5b4fc;">${item.retreaver_uuid.substring(0, 13)}…</span>` : `<span style="font-size: 11px; color: #818cf8;">Live RTB</span>`;
 
           return `
             <tr>
@@ -135,6 +137,7 @@
                 <span class="did-pill">${item.destination_number}</span>
                 <button class="copy-mini" onclick="copyDid('${item.destination_number}', this)" title="Copy DID">⧉</button>
               </td>
+              <td>${uuidDisplay}</td>
               <td>
                 <span class="status-tag">Reserved</span>
               </td>
