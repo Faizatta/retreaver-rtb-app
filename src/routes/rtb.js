@@ -54,13 +54,13 @@ router.post('/rtb', async (req, res) => {
           caller_zip: validatedParams.caller_zip,
           destination_number: 'No DID Available',
           retreaver_uuid: result.retreaver_uuid,
-          status: 'Rejected / Shielded'
+          status: 'No Call Buyer'
         });
       }
 
       return res.status(200).json({
         success: false,
-        message: 'No DID available',
+        message: 'No DID available (No Call Buyer)',
         number: null,
         retreaver_uuid: result.retreaver_uuid
       });

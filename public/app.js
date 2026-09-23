@@ -145,19 +145,36 @@ bidForm.addEventListener('submit', async event => {
       numberDisplay.textContent = formatPhoneNumber(assignedDid);
 
       statusPill.textContent = 'RESERVED';
-      statusPill.className = 'status-badge-lg reserved';
+      statusPill.className = 'status-badge reserved';
+      statusPill.style.background = '';
+      statusPill.style.color = '';
 
       uuidVal.textContent = data.retreaver_uuid ? `${data.retreaver_uuid.substring(0, 13)}…` : 'Live RTB';
       footerStatus.textContent = 'Reservation Active (300s)';
 
       updateTrackingCounter();
     } else {
-      throw new Error(data.message || 'No destination number returned.');
+      emptyState.hidden = false;
+      reservedState.hidden = true;
+      statusPill.textContent = 'NO CALL BUYER';
+      statusPill.className = 'status-badge';
+      statusPill.style.background = '#3f1d24';
+      statusPill.style.color = '#fca5a5';
+
+      uuidVal.textContent = data.retreaver_uuid ? `${data.retreaver_uuid.substring(0, 13)}…` : 'Completed';
+      footerStatus.textContent = 'Auction Completed · No Target';
+
+      errorBox.textContent = data.message || 'No Call Buyer accepted this bid (Buyer is offline or out of operating hours).';
+      errorBox.hidden = false;
+
+      $('result-title').textContent = 'No Buyer Available (Offline)';
+      $('result-description').textContent = 'Retreaver recorded auction, but no call buyer is currently active or accepting this state.';
+      updateTrackingCounter();
     }
 
   } catch (err) {
     statusPill.textContent = 'AUCTION FAILED';
-    statusPill.className = 'status-badge-lg';
+    statusPill.className = 'status-badge';
     errorBox.textContent = err.name === 'AbortError' ? 'Auction timed out. Please retry.' : err.message;
     errorBox.hidden = false;
 
@@ -261,7 +278,7 @@ function renderTrackingTable(leads) {
         </td>
         <td>${uuidText}</td>
         <td>
-          <span class="status-chip">Reserved</span>
+          <span class="status-chip" style="${lead.status === 'Reserved' ? 'background: #064e3b; color: #6ee7b7;' : 'background: #3f1d24; color: #fca5a5;'}">${lead.status || 'No Target'}</span>
         </td>
         <td style="color: var(--text-muted); font-size: 12px;">${lead.publisher || 'ID: 404c64b1'}</td>
       </tr>

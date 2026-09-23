@@ -1,17 +1,9 @@
 import config from '../config.js';
 
-function generateFallbackDid() {
-  const tollFreePrefixes = ['800', '888', '877', '866', '855', '844', '833'];
-  const prefix = tollFreePrefixes[Math.floor(Math.random() * tollFreePrefixes.length)];
-  const mid = String(Math.floor(200 + Math.random() * 800));
-  const end = String(Math.floor(1000 + Math.random() * 9000));
-  return `+1${prefix}${mid}${end}`;
-}
-
 /**
  * Service to interact with the Retreaver Real-Time Bidding (RTB) API.
- * Guarantees strict confidentiality of server credentials and limits
- * returned payload strictly to the inbound DID.
+ * Strict Real-Time Mode: Only returns 'reserved' when an actual inbound_number
+ * is awarded by Retreaver. Strictly reports 'no-target' when no call buyer is active.
  *
  * @param {{ caller_number: string, caller_zip: string, caller_state: string }} params
  * @param {object} [options] Optional overrides for testing
@@ -54,12 +46,10 @@ export async function requestRtbReservation(params, options = {}) {
     // If HTTP status is not 2xx
     if (!response.ok) {
       console.warn(`[RTB Service] Upstream Retreaver returned HTTP status: ${response.status}`);
-      if (options.endpoint) {
-        return {
-          status: 'error',
-          message: 'Unable to get a DID. Please check the configuration and caller information.'
-        };
-      }
+      return {
+        status: 'error',
+        message: 'Unable to get a DID. Please check the configuration and caller information.'
+      };
     }
 
     let data;
@@ -69,11 +59,11 @@ export async function requestRtbReservation(params, options = {}) {
       data = null;
     }
 
-    // In unit test mocks with mock endpoint, adhere to test contract
-    if (options.endpoint && data && (data.status === 'no-target' || data.status === 'rejected')) {
+    // Check for explicit no-target or rejected status
+    if (data && (data.status === 'no-target' || data.status === 'rejected')) {
       return {
         status: 'no-target',
-        message: 'No DID available',
+        message: data.message || 'No DID available',
         retreaver_uuid: data.uuid
       };
     }
@@ -87,29 +77,18 @@ export async function requestRtbReservation(params, options = {}) {
       };
     }
 
-    // Real live ping reached Retreaver!
-    // Since Campaign d236359b has no purchased pool numbers, Retreaver logs the auction UUID.
-    // We capture that real auction UUID and immediately provide an active toll-free tracking DID.
-    const dynamicDid = generateFallbackDid();
+    // No target awarded or no inbound number returned
     return {
-      status: 'reserved',
-      inbound_number: dynamicDid,
+      status: 'no-target',
+      message: (data && data.message) || 'No DID available',
       retreaver_uuid: data ? data.uuid : undefined
     };
 
   } catch (err) {
-    if (options.endpoint) {
-      console.error(`[RTB Service] Communication error: ${err.message}`);
-      return {
-        status: 'error',
-        message: 'Unable to get a DID. Please check the configuration and caller information.'
-      };
-    }
-
-    // Instant DID guaranteed fallback
+    console.error(`[RTB Service] Communication error: ${err.message}`);
     return {
-      status: 'reserved',
-      inbound_number: generateFallbackDid()
+      status: 'error',
+      message: 'Unable to get a DID. Please check connection and caller information.'
     };
   }
 }
